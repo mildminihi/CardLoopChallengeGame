@@ -1,0 +1,121 @@
+/* Game Title */
+"game_title" = "🃏 Card Loop Game";
+
+/* Stage Information */
+"stage_of" = "Stage %d of %d";
+"win_of" = "Number of Wins %d";
+
+/* Stage Titles */
+"stage1_title" = "Red or Black?";
+"stage2_title" = "Higher or Lower?";
+"stage3_title" = "Inside or Outside?";
+"stage4_title" = "Guess the Suit";
+"stage5_title" = "Guess is Even/Odd";
+"stage6_title" = "Guess is Number/Face";
+
+/* Stage Descriptions */
+"stage1_description" = "Guess the color of the next card";
+"stage2_description" = "Will the next card be higher or lower?";
+"stage3_description" = "Will the next card be inside or outside the range of last 2 card?";
+"stage4_description" = "Guess the suit of the next card";
+"stage5_description" = "Guess is Even [2,4,6,8,10,Q] or Odd [3,5,7,9,J,K,A]";
+"stage6_description" = "Guess is Number or Face [J,Q,K,A]";
+
+/* Buttons */
+"red_button" = "Red ♥♦";
+"black_button" = "Black ♠♣";
+"higher_button" = "Higher ↑";
+"lower_button" = "Lower ↓";
+"inside_button" = "Inside ↔";
+"outside_button" = "Outside ↕";
+"spades_button" = "Spades ♠";
+"hearts_button" = "Hearts ♥";
+"diamonds_button" = "Diamonds ♦";
+"clubs_button" = "Clubs ♣";
+"odd_button" = "Odd";
+"even_button" = "Even 🂢";
+"number_button" = "Number 🂢";
+"face_button" = "Face 🃞";
+"start_new_game" = "Start New Game";
+
+/* Feedback Messages */
+"correct_card_was" = "Correct! The card was %@";
+"wrong_card_was_game_over" = "Wrong! The card was %@. Game Over!";
+"lucky_equal_ranks" = "Lucky! Equal ranks, you advance!";
+"correct_card_is_higher_than" = "Correct! %@ is higher than %@";
+"correct_card_is_lower_than" = "Correct! %@ is lower than %@";
+"wrong_card_is_higher_than" = "Wrong! %@ is higher than %@. Game Over!";
+"wrong_card_is_lower_than" = "Wrong! %@ is lower than %@. Game Over!";
+"lucky_equal_boundary" = "Lucky! Card equals boundary, you advance!";
+"correct_card_is_inside" = "Correct! %@ is inside the range";
+"correct_card_is_outside" = "Correct! %@ is outside the range";
+"wrong_card_is_inside" = "Wrong! %@ is inside the range. Game Over!";
+"wrong_card_is_outside" = "Wrong! %@ is outside the range. Game Over!";
+"correct_won_game" = "Correct! You won the game! 🎉";
+"wrong_suit_was" = "Wrong! The suit was %@. Game Over!";
+
+/* Alerts */
+"game_over" = "Game Over";
+"new_game" = "New Game";
+"congratulations" = "Congratulations! You won! 🎉";
+"better_luck" = "Better luck next time!";
+
+/* Card Info */
+"cards_remaining" = "Cards remaining: %d";
+
+/* Common Words */
+"higher_word" = "higher";
+"lower_word" = "lower";
+"inside_word" = "inside";
+"outside_word" = "outside";
+
+/* Language Selection */
+"language_button" = "Lang";
+"language_selection" = "Language Selection";
+"select_language" = "Choose your preferred language";
+"cancel" = "Cancel";
+
+/* Game Stages */
+"stage1_title" = "Red or Black?";
+"stage1_description" = "Guess the color of the next card";
+"stage2_title" = "Higher or Lower?";
+"stage2_description" = "Will the next card be higher or lower?";
+"stage3_title" = "Inside or Outside?";
+"stage3_description" = "Will the next card be inside or outside the range?";
+"stage4_title" = "Guess the Suit";
+"stage4_description" = "Guess the suit of the next card";
+
+/* Card View */
+"stage_label" = "Stage %d";
+
+/* Buttons */
+"red" = "Red";
+"black" = "Black";
+"higher" = "Higher";
+"lower" = "Lower";
+"inside" = "Inside";
+"outside" = "Outside";
+
+/* Stat Page*/
+"game_overview" = "Game Overview";
+"total_games" = "Total Games";
+"games_won" = "Won";
+"games_lost" = "Loss";
+"stats_equal" = "Equal";
+"clear_stats" = "Clear";
+"clear_stats_confirmation" = "Clear Stats Confirmation";
+"clear_stats_message" = "Are you sure you want to clear all stats? This action cannot be undone.";
+"clear_stats_confirm" = "Just Clear!";
+
+/* Statistics Page */
+"statistics_title" = "📊 Statistics";
+
+/* Home Page */
+"welcome_message" = "Welcome to the ultimate card guessing challenge!";
+"select_game_mode" = "Select Game Mode";
+"normal_mode" = "Normal Mode";
+"normal_mode_description" = "Classic 4-stage card challenge game";
+"endless_mode" = "Endless Mode";
+"endless_mode_description" = "Keep playing until you make a mistake";
+"coming_soon" = "Coming Soon";
+"home" = "Home";
