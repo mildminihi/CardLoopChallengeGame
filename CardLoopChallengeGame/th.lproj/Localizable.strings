@@ -90,6 +90,10 @@
 "win_percentage" = "เปอร์เซ็นต์ชนะ: %.2f%%";
 "best_streak" = "สตรีคที่ดีที่สุด: %d";
 "average_score" = "คะแนนเฉลี่ย: %.2f";
+"endless_mode_overview" = "ภาพรวมโหมดไม่รู้จบ";
+"high_score" = "คะแนนสูงสุด";
+"total_endless_games" = "เล่นไปทั้งหมด: %d";
+"stage_encounters" = "ด่านที่พบทั้งหมด";
 
 /* Home Page */
 "welcome_message" = "ยินดีต้อนรับสู่เกมทายไพ่ที่ท้าทายที่สุด!";
@@ -100,3 +104,11 @@
 "endless_mode_description" = "เล่นต่อไปจนกว่าจะเดาผิด";
 "coming_soon" = "เร็วๆ นี้";
 "home" = "หน้าหลัก";
+
+/* Setting Page */
+"settings_title" = "การตั้งค่า";
+"audio_settings" = "การตั้งค่าเสียง";
+"sound_effects" = "เอฟเฟกต์เสียง";
+"haptic_settings" = "การตั้งค่า Haptic";
+"haptic_feedback" = "การตอบสนอง Haptic";
+"enable_haptic_description" = "เปิดใช้งานการตอบสนอง Haptic สำหรับประสบการณ์ที่ดียิ่งขึ้น";

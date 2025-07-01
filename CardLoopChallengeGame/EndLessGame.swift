@@ -62,7 +62,8 @@ class EndLessGameModel: ObservableObject {
         gameResult = .playing
         feedback = ""
         showingResult = false
-        GameStatistics.shared.trackGameStart()
+        GameStatistics.shared.trackStageEncounterEndLessMode(stage: currentStage)
+        GameStatistics.shared.trackEndlessGameStart()
         winCount = 0
     }
     
@@ -92,13 +93,10 @@ class EndLessGameModel: ObservableObject {
         if card.isRed == isRed {
             feedback = "correct_card_was".localized(with: card.displayText)
             advanceToNextStage()
-            GameStatistics.shared.trackStage1Choice(isRed: true)
         } else {
             feedback = "wrong_card_was_game_over".localized(with: card.displayText)
             gameResult = .lost
             showingResult = true
-            GameStatistics.shared.trackGameEnd(won: false)
-            GameStatistics.shared.trackStage1Choice(isRed: false)
         }
     }
     
@@ -115,19 +113,15 @@ class EndLessGameModel: ObservableObject {
         if card.rank.rawValue == previousCard.rank.rawValue {
             feedback = "lucky_equal_ranks".localized
             advanceToNextStage()
-            GameStatistics.shared.trackStage2Choice(isHigher: false, wasEqual: true)
         } else if isCorrect {
             let comparisonKey = isActuallyHigher ? "correct_card_is_higher_than" : "correct_card_is_lower_than"
             feedback = comparisonKey.localized(with: card.displayText, previousCard.displayText)
             advanceToNextStage()
-            GameStatistics.shared.trackStage2Choice(isHigher: isActuallyHigher)
         } else {
             let comparisonKey = isActuallyHigher ? "wrong_card_is_higher_than" : "wrong_card_is_lower_than"
             feedback = comparisonKey.localized(with: card.displayText, previousCard.displayText)
             gameResult = .lost
             showingResult = true
-            GameStatistics.shared.trackGameEnd(won: false)
-            GameStatistics.shared.trackStage2Choice(isHigher: isActuallyHigher)
         }
     }
     
@@ -150,19 +144,15 @@ class EndLessGameModel: ObservableObject {
         if cardRank == minRank || cardRank == maxRank {
             feedback = "lucky_equal_boundary".localized
             advanceToNextStage()
-            GameStatistics.shared.trackStage3Choice(isInside: true, wasEqual: true)
         } else if (isInside && isActuallyInside) || (!isInside && !isActuallyInside) {
             let positionKey = isActuallyInside ? "correct_card_is_inside" : "correct_card_is_outside"
             feedback = positionKey.localized(with: card.displayText)
             advanceToNextStage()
-            GameStatistics.shared.trackStage3Choice(isInside: isActuallyInside)
         } else {
             let positionKey = isActuallyInside ? "wrong_card_is_inside" : "wrong_card_is_outside"
             feedback = positionKey.localized(with: card.displayText)
             gameResult = .lost
             showingResult = true
-            GameStatistics.shared.trackGameEnd(won: false)
-            GameStatistics.shared.trackStage3Choice(isInside: isActuallyInside)
         }
     }
     
@@ -172,17 +162,13 @@ class EndLessGameModel: ObservableObject {
         
         revealedCards.append(card)
         
-        GameStatistics.shared.trackStage4Choice(suit: suit.rawValue)
-        
         if card.suit == suit {
             feedback = "correct_won_game".localized
             advanceToNextStage()
-            GameStatistics.shared.trackGameEnd(won: true)
         } else {
             feedback = "wrong_suit_was".localized(with: card.suit.rawValue)
             gameResult = .lost
             showingResult = true
-            GameStatistics.shared.trackGameEnd(won: false)
         }
     }
     
@@ -194,13 +180,10 @@ class EndLessGameModel: ObservableObject {
         if card.isOdd == isOdd {
             feedback = "correct_card_was".localized(with: card.displayText)
             advanceToNextStage()
-            GameStatistics.shared.trackStage1Choice(isRed: true)
         } else {
             feedback = "wrong_card_was_game_over".localized(with: card.displayText)
             gameResult = .lost
             showingResult = true
-            GameStatistics.shared.trackGameEnd(won: false)
-            GameStatistics.shared.trackStage1Choice(isRed: false)
         }
     }
     
@@ -212,13 +195,10 @@ class EndLessGameModel: ObservableObject {
         if card.isNumber == isNumber {
             feedback = "correct_card_was".localized(with: card.displayText)
             advanceToNextStage()
-            GameStatistics.shared.trackStage1Choice(isRed: true)
         } else {
             feedback = "wrong_card_was_game_over".localized(with: card.displayText)
             gameResult = .lost
             showingResult = true
-            GameStatistics.shared.trackGameEnd(won: false)
-            GameStatistics.shared.trackStage1Choice(isRed: false)
         }
     }
     
@@ -226,6 +206,8 @@ class EndLessGameModel: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             self.winCount += 1
             self.currentStage = self.winCount > 2 ? GameType.getNewStage() : [.color, .suite, .highLow, .odd, .number].randomElement() ?? .color
+            GameStatistics.shared.trackStageEncounterEndLessMode(stage: self.currentStage)
+            GameStatistics.shared.trackNewHighScore(score: self.winCount)
             self.feedback = ""
         }
     }
@@ -276,6 +258,7 @@ struct EndLessGameView: View {
                     }
                     .overlay(alignment: .trailing) {
                         Button(action: {
+                            SettingsManager.shared.performHapticFeedback()
                             dismiss()
                         }) {
                             VStack(spacing: 2) {
@@ -346,6 +329,7 @@ struct EndLessGameView: View {
                 
                 // New Game Button
                 Button("start_new_game".localized) {
+                    SettingsManager.shared.performHapticFeedback()
                     game.startNewGame()
                 }
                 .font(.headline)
@@ -364,6 +348,7 @@ struct EndLessGameView: View {
                 HStack {
                     // Statistics Button - Bottom Left
                     Button(action: {
+                        SettingsManager.shared.performHapticFeedback()
                         showingStatistics = true
                     }) {
                         Text("📊")
@@ -382,6 +367,7 @@ struct EndLessGameView: View {
                     
                     // Language Button - Bottom Right
                     Button(action: {
+                        SettingsManager.shared.performHapticFeedback()
                         showingLanguagePicker = true
                     }) {
                         Text(getCurrentLanguageFlag())
@@ -401,20 +387,26 @@ struct EndLessGameView: View {
             }
         }
         .sheet(isPresented: $showingStatistics) {
-            StatisticsView()
+            StatisticsView(isInGamePage: true, isNormalModel: false)
+                .presentationDetents([.fraction(0.7)])
+                        .presentationDragIndicator(.visible)
         }
         .alert("language_selection".localized, isPresented: $showingLanguagePicker) {
             ForEach(languageManager.availableLanguages, id: \.code) { language in
                 Button("\(language.flag) \(language.name)") {
+                    SettingsManager.shared.performHapticFeedback()
                     languageManager.setLanguage(language.code)
                 }
             }
-            Button("cancel".localized, role: .cancel) { }
+            Button("cancel".localized, role: .cancel) {
+                SettingsManager.shared.performHapticFeedback()
+            }
         } message: {
             Text("select_language".localized)
         }
         .alert("game_over".localized, isPresented: $game.showingResult) {
             Button("new_game".localized) {
+                SettingsManager.shared.performHapticFeedback()
                 game.startNewGame()
             }
         } message: {
@@ -437,6 +429,7 @@ struct EndLessGameView: View {
             case .color:
                 HStack(spacing: 20) {
                     Button("red_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessColor(isRed: true)
                     }
                     .font(.headline)
@@ -451,6 +444,7 @@ struct EndLessGameView: View {
                     )
                     
                     Button("black_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessColor(isRed: false)
                     }
                     .font(.headline)
@@ -468,6 +462,7 @@ struct EndLessGameView: View {
             case .highLow:
                 HStack(spacing: 20) {
                     Button("higher_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessHigherOrLower(isHigher: true)
                     }
                     .font(.headline)
@@ -482,6 +477,7 @@ struct EndLessGameView: View {
                     )
                     
                     Button("lower_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessHigherOrLower(isHigher: false)
                     }
                     .font(.headline)
@@ -499,6 +495,7 @@ struct EndLessGameView: View {
             case .inOut:
                 HStack(spacing: 20) {
                     Button("inside_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessInsideOrOutside(isInside: true)
                     }
                     .font(.headline)
@@ -513,6 +510,7 @@ struct EndLessGameView: View {
                     )
                     
                     Button("outside_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessInsideOrOutside(isInside: false)
                     }
                     .font(.headline)
@@ -530,6 +528,7 @@ struct EndLessGameView: View {
             case .suite:
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 15) {
                     Button("spades_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessSuit(.spades)
                     }
                     .font(.headline)
@@ -544,6 +543,7 @@ struct EndLessGameView: View {
                     )
                     
                     Button("hearts_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessSuit(.hearts)
                     }
                     .font(.headline)
@@ -558,6 +558,7 @@ struct EndLessGameView: View {
                     )
                     
                     Button("diamonds_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessSuit(.diamonds)
                     }
                     .font(.headline)
@@ -572,6 +573,7 @@ struct EndLessGameView: View {
                     )
                     
                     Button("clubs_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessSuit(.clubs)
                     }
                     .font(.headline)
@@ -588,6 +590,7 @@ struct EndLessGameView: View {
             case .odd:
                 HStack(spacing: 20) {
                     Button("even_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessOdd(isOdd: false)
                     }
                     .font(.headline)
@@ -602,6 +605,7 @@ struct EndLessGameView: View {
                     )
                     
                     Button("odd_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessOdd(isOdd: true)
                     }
                     .font(.headline)
@@ -618,6 +622,7 @@ struct EndLessGameView: View {
             case .number:
                 HStack(spacing: 20) {
                     Button("number_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessNumber(isNumber: true)
                     }
                     .font(.headline)
@@ -632,6 +637,7 @@ struct EndLessGameView: View {
                     )
                     
                     Button("face_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessNumber(isNumber: false)
                     }
                     .font(.headline)

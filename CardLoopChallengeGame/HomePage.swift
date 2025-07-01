@@ -3,7 +3,9 @@ import SwiftUI
 // MARK: - Home Page View
 struct HomePage: View {
     @StateObject private var languageManager = LanguageManager.shared
+    @StateObject private var settingsManager = SettingsManager.shared
     @State private var showingLanguagePicker = false
+    @State private var showingSettings = false
     @State private var selectedGameMode: GameMode?
     
     var body: some View {
@@ -52,10 +54,10 @@ struct HomePage: View {
                 
                 Spacer()
                 
-                // Statistics and Language buttons at bottom
+                // Statistics, Settings and Language buttons at bottom
                 HStack {
                     // Statistics Button - Bottom Left
-                    NavigationLink(destination: StatisticsView()) {
+                    NavigationLink(destination: StatisticsView(isInGamePage: false)) {
                         Text("📊")
                             .font(.title3)
                             .padding(8)
@@ -67,11 +69,34 @@ struct HomePage: View {
                             )
                             .shadow(color: .blue.opacity(0.3), radius: 2, x: 0, y: 1)
                     }
+                    .simultaneousGesture(TapGesture().onEnded {
+                        settingsManager.performLightHapticFeedback()
+                    })
+                    
+                    Spacer()
+                    
+                    // Settings Button - Bottom Center
+                    Button(action: {
+                        settingsManager.performLightHapticFeedback()
+                        showingSettings = true
+                    }) {
+                        Text("⚙️")
+                            .font(.title3)
+                            .padding(8)
+                            .background(Color.black.opacity(0.4))
+                            .clipShape(Circle())
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.gray.opacity(0.6), lineWidth: 1.5)
+                            )
+                            .shadow(color: .gray.opacity(0.3), radius: 2, x: 0, y: 1)
+                    }
                     
                     Spacer()
                     
                     // Language Button - Bottom Right
                     Button(action: {
+                        settingsManager.performLightHapticFeedback()
                         showingLanguagePicker = true
                     }) {
                         Text(getCurrentLanguageFlag())
@@ -94,15 +119,21 @@ struct HomePage: View {
         .alert("language_selection".localized, isPresented: $showingLanguagePicker) {
             ForEach(languageManager.availableLanguages, id: \.code) { language in
                 Button("\(language.flag) \(language.name)") {
+                    settingsManager.performLightHapticFeedback()
                     languageManager.setLanguage(language.code)
                 }
             }
-            Button("cancel".localized, role: .cancel) { }
+            Button("cancel".localized, role: .cancel) {
+                settingsManager.performLightHapticFeedback()
+            }
         } message: {
             Text("select_language".localized)
         }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("LanguageChanged"))) { _ in
             // Force UI refresh when language changes
+        }
+        .sheet(isPresented: $showingSettings) {
+            SettingsView()
         }
     }
     
@@ -114,6 +145,7 @@ struct HomePage: View {
     private func gameMenuButton(for mode: GameMode) -> some View {
         Button(action: {
             if !mode.isComingSoon {
+                settingsManager.performHapticFeedback()
                 selectedGameMode = mode
             }
         }) {

@@ -5,7 +5,16 @@ struct StatisticsView: View {
     @StateObject private var statistics = GameStatistics.shared
     @StateObject private var languageManager = LanguageManager.shared
     @State private var showingClearConfirmation = false
+    @State private var showingEndlessMode = false
     @Environment(\.dismiss) private var dismiss
+    
+    var isInGamePage: Bool = false
+    var isNormalModel: Bool = true
+    
+    init(isInGamePage: Bool = false, isNormalModel: Bool = true) {
+        self.isInGamePage = isInGamePage
+        self.isNormalModel = isNormalModel
+    }
     
     var body: some View {
         ZStack {
@@ -22,55 +31,39 @@ struct StatisticsView: View {
             
             VStack(spacing: 20) {
                 
+                // Mode Switch Toggle
+                if !isInGamePage {
+                    modeSwitchSection
+                }
                 ScrollView {
                     VStack(spacing: 20) {
                         // Game Overview Stats
-                        gameOverviewSection
+                        if isInGamePage {
+                            if isNormalModel {
+                                gameOverviewSection
+                                // Normal Mode Statistics
+                                normalModeStatistics
+                            } else {
+                                endlessModeStatistics
+                            }
+                        }
                         
-                        // Stage 1 Statistics
-                        stageStatSection(
-                            title: "stage1_title".localized,
-                            stats: [
-                                ("red_button".localized, statistics.stage1RedCount, Color.red),
-                                ("black_button".localized, statistics.stage1BlackCount, Color.white)
-                            ]
-                        )
-                        
-                        // Stage 2 Statistics
-                        stageStatSection(
-                            title: "stage2_title".localized,
-                            stats: [
-                                ("higher_button".localized, statistics.stage2HigherCount, Color.green),
-                                ("lower_button".localized, statistics.stage2LowerCount, Color.green),
-                                ("stats_equal".localized, statistics.stage2EqualCount, Color.yellow)
-                            ]
-                        )
-                        
-                        // Stage 3 Statistics
-                        stageStatSection(
-                            title: "stage3_title".localized,
-                            stats: [
-                                ("inside_button".localized, statistics.stage3InsideCount, Color.green),
-                                ("outside_button".localized, statistics.stage3OutsideCount, Color.green),
-                                ("stats_equal".localized, statistics.stage3EqualCount, Color.yellow)
-                            ]
-                        )
-                        
-                        // Stage 4 Statistics
-                        stageStatSection(
-                            title: "stage4_title".localized,
-                            stats: [
-                                ("spades_button".localized, statistics.stage4SpadesCount, Color.white),
-                                ("hearts_button".localized, statistics.stage4HeartsCount, Color.red),
-                                ("diamonds_button".localized, statistics.stage4DiamondsCount, Color.red),
-                                ("clubs_button".localized, statistics.stage4ClubsCount, Color.white)
-                            ]
-                        )
+                        else {
+                            if !showingEndlessMode {
+                                gameOverviewSection
+                                // Normal Mode Statistics
+                                normalModeStatistics
+                            } else {
+                                // Endless Mode Statistics
+                                endlessModeStatistics
+                            }
+                        }
                         
                         Spacer()
                         
                         // Clear Statistics Button
                         Button("clear_stats".localized) {
+                            SettingsManager.shared.performHapticFeedback()
                             showingClearConfirmation = true
                         }
                         .font(.headline)
@@ -100,6 +93,29 @@ struct StatisticsView: View {
             // Force UI refresh when language changes
             statistics.objectWillChange.send()
         }
+    }
+    
+    private var modeSwitchSection: some View {
+        HStack {
+            Text(showingEndlessMode ? "endless_mode".localized : "normal_mode".localized)
+                .font(.headline)
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+            
+            Spacer()
+            
+            Toggle("", isOn: $showingEndlessMode)
+                .toggleStyle(SwitchToggleStyle(tint: Color.green))
+//                .scaleEffect(1.2)
+        }
+        .padding()
+        .background(Color.black.opacity(0.3))
+        .cornerRadius(15)
+        .overlay(
+            RoundedRectangle(cornerRadius: 15)
+                .stroke(Color.green.opacity(0.5), lineWidth: 1)
+        )
+        .padding(.horizontal)
     }
     
     private var gameOverviewSection: some View {
@@ -136,6 +152,83 @@ struct StatisticsView: View {
             RoundedRectangle(cornerRadius: 15)
                 .stroke(Color.green.opacity(0.5), lineWidth: 1)
         )
+    }
+    
+    private var endlessModeStatistics: some View {
+        VStack(spacing: 20) {
+            // Endless Mode Overview Stats
+            stageStatSection(
+                title: "endless_mode_overview".localized,
+                stats: [
+                    ("high_score".localized, statistics.highScoreCount, Color.yellow),
+                    ("total_endless_games".localized, statistics.totalEndLessGamesPlayed, Color.blue)
+                ]
+            )
+            
+            // Stage Encounter Statistics
+            stageStatSection(
+                title: "stage_encounters".localized,
+                stats: [
+                    ("stage1_title".localized, statistics.colorStageEncounter, Color.red),
+                    ("stage2_title".localized, statistics.highLowStageEncounter, Color.green),
+                    ("stage3_title".localized, statistics.rangeStageEncounter, Color.blue),
+                    ("stage4_title".localized, statistics.suitStageEncounter, Color.purple),
+                    ("stage5_title".localized, statistics.evenOddStageEncounter, Color.orange),
+                    ("stage6_title".localized, statistics.numberStageEncounter, Color.cyan)
+                ]
+            )
+        }
+        .padding()
+        .background(Color.black.opacity(0.3))
+        .cornerRadius(15)
+        .overlay(
+            RoundedRectangle(cornerRadius: 15)
+                .stroke(Color.green.opacity(0.5), lineWidth: 1)
+        )
+    }
+    
+    private var normalModeStatistics: some View {
+        VStack(spacing: 20) {
+            // Stage 1 Statistics
+            stageStatSection(
+                title: "stage1_title".localized,
+                stats: [
+                    ("red_button".localized, statistics.stage1RedCount, Color.red),
+                    ("black_button".localized, statistics.stage1BlackCount, Color.white)
+                ]
+            )
+            
+            // Stage 2 Statistics
+            stageStatSection(
+                title: "stage2_title".localized,
+                stats: [
+                    ("higher_button".localized, statistics.stage2HigherCount, Color.green),
+                    ("lower_button".localized, statistics.stage2LowerCount, Color.green),
+                    ("stats_equal".localized, statistics.stage2EqualCount, Color.yellow)
+                ]
+            )
+            
+            // Stage 3 Statistics
+            stageStatSection(
+                title: "stage3_title".localized,
+                stats: [
+                    ("inside_button".localized, statistics.stage3InsideCount, Color.green),
+                    ("outside_button".localized, statistics.stage3OutsideCount, Color.green),
+                    ("stats_equal".localized, statistics.stage3EqualCount, Color.yellow)
+                ]
+            )
+            
+            // Stage 4 Statistics
+            stageStatSection(
+                title: "stage4_title".localized,
+                stats: [
+                    ("spades_button".localized, statistics.stage4SpadesCount, Color.white),
+                    ("hearts_button".localized, statistics.stage4HeartsCount, Color.red),
+                    ("diamonds_button".localized, statistics.stage4DiamondsCount, Color.red),
+                    ("clubs_button".localized, statistics.stage4ClubsCount, Color.white)
+                ]
+            )
+        }
     }
     
     private func stageStatSection(title: String, stats: [(String, Int, Color)]) -> some View {

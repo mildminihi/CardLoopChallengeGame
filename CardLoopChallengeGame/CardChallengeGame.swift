@@ -192,6 +192,7 @@ class CardChallengeGameModel: ObservableObject {
 struct CardChallengeGameView: View {
     @StateObject private var game = CardChallengeGameModel()
     @StateObject private var languageManager = LanguageManager.shared
+    @StateObject private var settingsManager = SettingsManager.shared
     @State private var showingLanguagePicker = false
     @State private var showingStatistics = false
     @Environment(\.dismiss) private var dismiss
@@ -233,6 +234,7 @@ struct CardChallengeGameView: View {
                     }
                     .overlay(alignment: .trailing) {
                         Button(action: {
+                            SettingsManager.shared.performHapticFeedback()
                             dismiss()
                         }) {
                             VStack(spacing: 2) {
@@ -303,6 +305,7 @@ struct CardChallengeGameView: View {
                 
                 // New Game Button
                 Button("start_new_game".localized) {
+                    SettingsManager.shared.performHapticFeedback()
                     game.startNewGame()
                 }
                 .font(.headline)
@@ -321,6 +324,7 @@ struct CardChallengeGameView: View {
                 HStack {
                     // Statistics Button - Bottom Left
                     Button(action: {
+                        SettingsManager.shared.performHapticFeedback()
                         showingStatistics = true
                     }) {
                         Text("📊")
@@ -339,6 +343,7 @@ struct CardChallengeGameView: View {
                     
                     // Language Button - Bottom Right
                     Button(action: {
+                        SettingsManager.shared.performHapticFeedback()
                         showingLanguagePicker = true
                     }) {
                         Text(getCurrentLanguageFlag())
@@ -358,20 +363,26 @@ struct CardChallengeGameView: View {
             }
         }
         .sheet(isPresented: $showingStatistics) {
-            StatisticsView()
+            StatisticsView(isInGamePage: true, isNormalModel: true)
+                .presentationDetents([.fraction(0.9)])
+                        .presentationDragIndicator(.visible)
         }
         .alert("language_selection".localized, isPresented: $showingLanguagePicker) {
             ForEach(languageManager.availableLanguages, id: \.code) { language in
                 Button("\(language.flag) \(language.name)") {
+                    SettingsManager.shared.performHapticFeedback()
                     languageManager.setLanguage(language.code)
                 }
             }
-            Button("cancel".localized, role: .cancel) { }
+            Button("cancel".localized, role: .cancel) {
+                SettingsManager.shared.performHapticFeedback()
+            }
         } message: {
             Text("select_language".localized)
         }
         .alert("game_over".localized, isPresented: $game.showingResult) {
             Button("new_game".localized) {
+                SettingsManager.shared.performHapticFeedback()
                 game.startNewGame()
             }
         } message: {
@@ -394,6 +405,7 @@ struct CardChallengeGameView: View {
             case .stage1:
                 HStack(spacing: 20) {
                     Button("red_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessColor(isRed: true)
                     }
                     .font(.headline)
@@ -408,6 +420,7 @@ struct CardChallengeGameView: View {
                     )
                     
                     Button("black_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessColor(isRed: false)
                     }
                     .font(.headline)
@@ -425,6 +438,7 @@ struct CardChallengeGameView: View {
             case .stage2:
                 HStack(spacing: 20) {
                     Button("higher_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessHigherOrLower(isHigher: true)
                     }
                     .font(.headline)
@@ -439,6 +453,7 @@ struct CardChallengeGameView: View {
                     )
                     
                     Button("lower_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessHigherOrLower(isHigher: false)
                     }
                     .font(.headline)
@@ -456,6 +471,7 @@ struct CardChallengeGameView: View {
             case .stage3:
                 HStack(spacing: 20) {
                     Button("inside_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessInsideOrOutside(isInside: true)
                     }
                     .font(.headline)
@@ -470,6 +486,7 @@ struct CardChallengeGameView: View {
                     )
                     
                     Button("outside_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessInsideOrOutside(isInside: false)
                     }
                     .font(.headline)
@@ -487,6 +504,7 @@ struct CardChallengeGameView: View {
             case .stage4:
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 15) {
                     Button("spades_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessSuit(.spades)
                     }
                     .font(.headline)
@@ -501,6 +519,7 @@ struct CardChallengeGameView: View {
                     )
                     
                     Button("hearts_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessSuit(.hearts)
                     }
                     .font(.headline)
@@ -515,6 +534,7 @@ struct CardChallengeGameView: View {
                     )
                     
                     Button("diamonds_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessSuit(.diamonds)
                     }
                     .font(.headline)
@@ -529,6 +549,7 @@ struct CardChallengeGameView: View {
                     )
                     
                     Button("clubs_button".localized) {
+                        SettingsManager.shared.performHapticFeedback()
                         game.guessSuit(.clubs)
                     }
                     .font(.headline)

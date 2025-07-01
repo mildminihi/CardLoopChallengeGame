@@ -109,6 +109,10 @@
 
 /* Statistics Page */
 "statistics_title" = "📊 Statistics";
+"endless_mode_overview" = "Endless Mode Overview";
+"high_score" = "High Score";
+"total_endless_games" = "Total Endless Games";
+"stage_encounters" = "Stage Encounters";
 
 /* Home Page */
 "welcome_message" = "Welcome to the ultimate card guessing challenge!";
@@ -119,3 +123,11 @@
 "endless_mode_description" = "Keep playing until you make a mistake";
 "coming_soon" = "Coming Soon";
 "home" = "Home";
+
+/* Setting Page */
+"settings_title" = "Settings";
+"audio_settings" = "Audio Settings";
+"sound_effects" = "Sound Effects";
+"haptic_settings" = "Haptic Settings";
+"haptic_feedback" = "Haptic Feedback";
+"enable_haptic_description" = "Enable haptic feedback for button presses";

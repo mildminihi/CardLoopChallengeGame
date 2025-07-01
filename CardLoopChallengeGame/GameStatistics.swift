@@ -23,6 +23,16 @@ class GameStatistics: ObservableObject {
     @Published var gamesWon = 0
     @Published var gamesLost = 0
     
+    //EndLess Mode Statistics
+    @Published var highScoreCount = 0
+    @Published var totalEndLessGamesPlayed = 0
+    @Published var colorStageEncounter = 0
+    @Published var highLowStageEncounter = 0
+    @Published var rangeStageEncounter = 0
+    @Published var suitStageEncounter = 0
+    @Published var evenOddStageEncounter = 0
+    @Published var numberStageEncounter = 0
+    
     static let shared = GameStatistics()
     
     private init() {
@@ -86,6 +96,42 @@ class GameStatistics: ObservableObject {
         saveStatistics()
     }
     
+    func trackStageEncounterEndLessMode(stage: GameType) {
+        switch stage {
+        case .color:
+            colorStageEncounter += 1
+        case .highLow:
+            highLowStageEncounter += 1
+        case .inOut:
+            rangeStageEncounter += 1
+        case .suite:
+            suitStageEncounter += 1
+        case .odd:
+            evenOddStageEncounter += 1
+        case .number:
+            numberStageEncounter += 1
+        }
+        saveStatistics()
+    }
+    
+    // MARK: - Endless Mode Tracking
+    func trackEndlessGameStart() {
+        totalEndLessGamesPlayed += 1
+        saveStatistics()
+    }
+    
+    func trackNewHighScore(score: Int) {
+        if score > highScoreCount {
+            highScoreCount = score
+            saveStatistics()
+        }
+    }
+    
+    func updateHighScore(score: Int) {
+        highScoreCount = max(highScoreCount, score)
+        saveStatistics()
+    }
+    
     // MARK: - Persistence
     private func saveStatistics() {
         let defaults = UserDefaults.standard
@@ -108,6 +154,15 @@ class GameStatistics: ObservableObject {
         defaults.set(totalGamesPlayed, forKey: "totalGamesPlayed")
         defaults.set(gamesWon, forKey: "gamesWon")
         defaults.set(gamesLost, forKey: "gamesLost")
+        
+        defaults.set(highScoreCount, forKey: "highScoreCount")
+        defaults.set(totalEndLessGamesPlayed, forKey: "totalEndLessGamesPlayed")
+        defaults.set(colorStageEncounter, forKey: "colorStageEncounter")
+        defaults.set(highLowStageEncounter, forKey: "highLowStageEncounter")
+        defaults.set(rangeStageEncounter, forKey: "rangeStageEncounter")
+        defaults.set(suitStageEncounter, forKey: "suitStageEncounter")
+        defaults.set(evenOddStageEncounter, forKey: "evenOddStageEncounter")
+        defaults.set(numberStageEncounter, forKey: "numberStageEncounter")
     }
     
     private func loadStatistics() {
@@ -131,6 +186,15 @@ class GameStatistics: ObservableObject {
         totalGamesPlayed = defaults.integer(forKey: "totalGamesPlayed")
         gamesWon = defaults.integer(forKey: "gamesWon")
         gamesLost = defaults.integer(forKey: "gamesLost")
+        
+        highScoreCount = defaults.integer(forKey: "highScoreCount")
+        totalEndLessGamesPlayed = defaults.integer(forKey: "totalEndLessGamesPlayed")
+        colorStageEncounter = defaults.integer(forKey: "colorStageEncounter")
+        highLowStageEncounter = defaults.integer(forKey: "highLowStageEncounter")
+        rangeStageEncounter = defaults.integer(forKey: "rangeStageEncounter")
+        suitStageEncounter = defaults.integer(forKey: "suitStageEncounter")
+        evenOddStageEncounter = defaults.integer(forKey: "evenOddStageEncounter")
+        numberStageEncounter = defaults.integer(forKey: "numberStageEncounter")
     }
     
     // MARK: - Clear Statistics
@@ -154,6 +218,15 @@ class GameStatistics: ObservableObject {
         totalGamesPlayed = 0
         gamesWon = 0
         gamesLost = 0
+        
+        highScoreCount = 0
+        totalEndLessGamesPlayed = 0
+        colorStageEncounter = 0
+        highLowStageEncounter = 0
+        rangeStageEncounter = 0
+        suitStageEncounter = 0
+        evenOddStageEncounter = 0
+        numberStageEncounter = 0
         
         saveStatistics()
     }
