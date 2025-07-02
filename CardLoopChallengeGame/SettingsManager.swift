@@ -5,6 +5,7 @@ import SwiftUI
 class SettingsManager: ObservableObject {
     @Published var isSoundEnabled = true
     @Published var isHapticEnabled = true
+    @Published var isEasyMode = true
     
     static let shared = SettingsManager()
     
@@ -17,17 +18,20 @@ class SettingsManager: ObservableObject {
         let defaults = UserDefaults.standard
         defaults.set(isSoundEnabled, forKey: "isSoundEnabled")
         defaults.set(isHapticEnabled, forKey: "isHapticEnabled")
+        defaults.set(isEasyMode, forKey: "isEasyMode")
     }
     
     private func loadSettings() {
         let defaults = UserDefaults.standard
         isSoundEnabled = defaults.bool(forKey: "isSoundEnabled")
         isHapticEnabled = defaults.bool(forKey: "isHapticEnabled")
+        isEasyMode = defaults.bool(forKey: "isEasyMode")
         
         // Set default values on first launch
         if !defaults.bool(forKey: "hasLaunchedBefore") {
             isSoundEnabled = true
             isHapticEnabled = true
+            isEasyMode = true
             defaults.set(true, forKey: "hasLaunchedBefore")
             saveSettings()
         }
@@ -41,6 +45,11 @@ class SettingsManager: ObservableObject {
     
     func toggleHaptic() {
         isHapticEnabled.toggle()
+        saveSettings()
+    }
+    
+    func toggleMode() {
+        isEasyMode.toggle()
         saveSettings()
     }
     

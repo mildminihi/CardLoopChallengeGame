@@ -32,11 +32,12 @@
 "hearts_button" = "Hearts ♥";
 "diamonds_button" = "Diamonds ♦";
 "clubs_button" = "Clubs ♣";
-"odd_button" = "Odd";
+"odd_button" = "Odd 🂣";
 "even_button" = "Even 🂢";
 "number_button" = "Number 🂢";
 "face_button" = "Face 🃞";
 "start_new_game" = "Start New Game";
+"next_stage" = "Next Stage";
 
 /* Feedback Messages */
 "correct_card_was" = "Correct! The card was %@";
@@ -131,3 +132,6 @@
 "haptic_settings" = "Haptic Settings";
 "haptic_feedback" = "Haptic Feedback";
 "enable_haptic_description" = "Enable haptic feedback for button presses";
+"easy_mode_settings" = "Play in easy mode";
+"easy_mode" = "Easy mode";
+"easy_mode_description" = "When in easy mode probably percent should show";

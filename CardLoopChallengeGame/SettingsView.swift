@@ -90,6 +90,25 @@ struct SettingsView: View {
                             )
                         }
                         
+                        settingSection(
+                            title: "easy_mode_settings".localized,
+                            icon: "face.smiling.fill"
+                        ) {
+                            settingToggleRow(
+                                title: "easy_mode".localized,
+                                description: "easy_mode_description".localized,
+                                isOn: $settingsManager.isEasyMode,
+                                isEnabled: true,
+                                action: {
+                                    settingsManager.toggleMode()
+                                    
+                                    if settingsManager.isHapticEnabled {
+                                        settingsManager.performHapticFeedback()
+                                    }
+                                }
+                            )
+                        }
+                        
                         Spacer()
                     }
                     .padding()

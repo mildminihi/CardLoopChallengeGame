@@ -25,6 +25,7 @@ enum GameStage: Int, CaseIterable {
 
 enum GameResult {
     case playing
+    case nextStage
     case won
     case lost
 }
@@ -77,7 +78,8 @@ class CardChallengeGameModel: ObservableObject {
         
         if card.isRed == isRed {
             feedback = "correct_card_was".localized(with: card.displayText)
-            advanceToNextStage()
+            //            advanceToNextStage()
+            gameResult = .nextStage
             GameStatistics.shared.trackStage1Choice(isRed: true)
         } else {
             feedback = "wrong_card_was_game_over".localized(with: card.displayText)
@@ -100,12 +102,14 @@ class CardChallengeGameModel: ObservableObject {
         
         if card.rank.rawValue == previousCard.rank.rawValue {
             feedback = "lucky_equal_ranks".localized
-            advanceToNextStage()
+            //            advanceToNextStage()
+            gameResult = .nextStage
             GameStatistics.shared.trackStage2Choice(isHigher: false, wasEqual: true)
         } else if isCorrect {
             let comparisonKey = isActuallyHigher ? "correct_card_is_higher_than" : "correct_card_is_lower_than"
             feedback = comparisonKey.localized(with: card.displayText, previousCard.displayText)
-            advanceToNextStage()
+            //            advanceToNextStage()
+            gameResult = .nextStage
             GameStatistics.shared.trackStage2Choice(isHigher: isActuallyHigher)
         } else {
             let comparisonKey = isActuallyHigher ? "wrong_card_is_higher_than" : "wrong_card_is_lower_than"
@@ -138,7 +142,8 @@ class CardChallengeGameModel: ObservableObject {
         } else if (isInside && isActuallyInside) || (!isInside && !isActuallyInside) {
             let positionKey = isActuallyInside ? "correct_card_is_inside" : "correct_card_is_outside"
             feedback = positionKey.localized(with: card.displayText)
-            advanceToNextStage()
+            //            advanceToNextStage()
+            gameResult = .nextStage
             GameStatistics.shared.trackStage3Choice(isInside: isActuallyInside)
         } else {
             let positionKey = isActuallyInside ? "wrong_card_is_inside" : "wrong_card_is_outside"
@@ -171,7 +176,7 @@ class CardChallengeGameModel: ObservableObject {
         }
     }
     
-    private func advanceToNextStage() {
+    func advanceToNextStage() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             switch self.currentStage {
             case .stage1:
@@ -184,6 +189,7 @@ class CardChallengeGameModel: ObservableObject {
                 break // Already at final stage
             }
             self.feedback = ""
+            self.gameResult = .playing
         }
     }
 }
@@ -303,18 +309,30 @@ struct CardChallengeGameView: View {
                     gameButtonsView
                 }
                 
-                // New Game Button
-                Button("start_new_game".localized) {
-                    SettingsManager.shared.performHapticFeedback()
-                    game.startNewGame()
+                if game.gameResult == .nextStage {
+                    Button("next_stage".localized) {
+                        SettingsManager.shared.performHapticFeedback()
+                        game.advanceToNextStage()
+                    }.font(.headline)
+                        .foregroundColor(.black)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
+                        .background(Color.green)
+                        .cornerRadius(10)
+                        .shadow(color: .green.opacity(0.3), radius: 5, x: 0, y: 2)
+                } else {
+                    // New Game Button
+                    Button("start_new_game".localized) {
+                        SettingsManager.shared.performHapticFeedback()
+                        game.startNewGame()
+                    }.font(.headline)
+                        .foregroundColor(.black)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
+                        .background(Color.green)
+                        .cornerRadius(10)
+                        .shadow(color: .green.opacity(0.3), radius: 5, x: 0, y: 2)
                 }
-                .font(.headline)
-                .foregroundColor(.black)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
-                .background(Color.green)
-                .cornerRadius(10)
-                .shadow(color: .green.opacity(0.3), radius: 5, x: 0, y: 2)
             }
             .padding()
             
@@ -365,7 +383,7 @@ struct CardChallengeGameView: View {
         .sheet(isPresented: $showingStatistics) {
             StatisticsView(isInGamePage: true, isNormalModel: true)
                 .presentationDetents([.fraction(0.9)])
-                        .presentationDragIndicator(.visible)
+                .presentationDragIndicator(.visible)
         }
         .alert("language_selection".localized, isPresented: $showingLanguagePicker) {
             ForEach(languageManager.availableLanguages, id: \.code) { language in
@@ -379,14 +397,6 @@ struct CardChallengeGameView: View {
             }
         } message: {
             Text("select_language".localized)
-        }
-        .alert("game_over".localized, isPresented: $game.showingResult) {
-            Button("new_game".localized) {
-                SettingsManager.shared.performHapticFeedback()
-                game.startNewGame()
-            }
-        } message: {
-            Text(game.gameResult == .won ? "congratulations".localized : "better_luck".localized)
         }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("LanguageChanged"))) { _ in
             // Force UI refresh when language changes
@@ -403,8 +413,12 @@ struct CardChallengeGameView: View {
         VStack(spacing: 15) {
             switch game.currentStage {
             case .stage1:
+                let redButtonText = SettingsManager.shared.isEasyMode ? "\("red_button".localized) \(Card.formatPercent(percent: Card.getPercentRed(remainDeck: game.deck)))" : "red_button".localized
+                
+                let blackButtonText = SettingsManager.shared.isEasyMode ? "\("black_button".localized) \(Card.formatPercent(percent: Card.getPercentBlack(remainDeck: game.deck)))" : "black_button".localized
+                
                 HStack(spacing: 20) {
-                    Button("red_button".localized) {
+                    Button(redButtonText) {
                         SettingsManager.shared.performHapticFeedback()
                         game.guessColor(isRed: true)
                     }
@@ -419,7 +433,7 @@ struct CardChallengeGameView: View {
                             .stroke(Color.red.opacity(0.5), lineWidth: 2)
                     )
                     
-                    Button("black_button".localized) {
+                    Button(blackButtonText) {
                         SettingsManager.shared.performHapticFeedback()
                         game.guessColor(isRed: false)
                     }
@@ -436,8 +450,12 @@ struct CardChallengeGameView: View {
                 }
                 
             case .stage2:
+                let higherButtonText = SettingsManager.shared.isEasyMode ? "\("higher_button".localized) \(Card.formatPercent(percent: Card.getPercentHigh(remainDeck: game.deck, currentRank: game.revealedCards.last?.rank.rawValue ?? 2)))" : "higher_button".localized
+                
+                let lowerButtonText = SettingsManager.shared.isEasyMode ? "\("lower_button".localized) \(Card.formatPercent(percent: Card.getPercentLow(remainDeck: game.deck, currentRank: game.revealedCards.last?.rank.rawValue ?? 2)))" : "lower_button".localized
+                
                 HStack(spacing: 20) {
-                    Button("higher_button".localized) {
+                    Button(higherButtonText) {
                         SettingsManager.shared.performHapticFeedback()
                         game.guessHigherOrLower(isHigher: true)
                     }
@@ -452,7 +470,7 @@ struct CardChallengeGameView: View {
                             .stroke(Color.green, lineWidth: 2)
                     )
                     
-                    Button("lower_button".localized) {
+                    Button(lowerButtonText) {
                         SettingsManager.shared.performHapticFeedback()
                         game.guessHigherOrLower(isHigher: false)
                     }
@@ -469,8 +487,12 @@ struct CardChallengeGameView: View {
                 }
                 
             case .stage3:
+                let insideButtonText = SettingsManager.shared.isEasyMode ? "\("inside_button".localized) \(Card.formatPercent(percent: Card.getPercentRange(remainDeck: game.deck, revealDeck: game.revealedCards)))" : "inside_button".localized
+                
+                let outsideButtonText = SettingsManager.shared.isEasyMode ? "\("outside_button".localized) \(Card.formatPercent(percent: Card.getPercentOutRange(remainDeck: game.deck, revealDeck: game.revealedCards)))" : "outside_button".localized
+                
                 HStack(spacing: 20) {
-                    Button("inside_button".localized) {
+                    Button(insideButtonText) {
                         SettingsManager.shared.performHapticFeedback()
                         game.guessInsideOrOutside(isInside: true)
                     }
@@ -485,7 +507,7 @@ struct CardChallengeGameView: View {
                             .stroke(Color.green, lineWidth: 2)
                     )
                     
-                    Button("outside_button".localized) {
+                    Button(outsideButtonText) {
                         SettingsManager.shared.performHapticFeedback()
                         game.guessInsideOrOutside(isInside: false)
                     }
@@ -502,8 +524,13 @@ struct CardChallengeGameView: View {
                 }
                 
             case .stage4:
+                let spadesButtonText = SettingsManager.shared.isEasyMode ? "\("spades_button".localized) \(Card.formatPercent(percent: Card.getPercentSuit(remainDeck: game.deck, suit: .spades)))" : "spades_button".localized
+                let heartsButtonText = SettingsManager.shared.isEasyMode ? "\("hearts_button".localized) \(Card.formatPercent(percent: Card.getPercentSuit(remainDeck: game.deck, suit: .hearts)))" : "hearts_button".localized
+                let diamondsButtonText = SettingsManager.shared.isEasyMode ? "\("diamonds_button".localized) \(Card.formatPercent(percent: Card.getPercentSuit(remainDeck: game.deck, suit: .diamonds)))" : "diamonds_button".localized
+                let clubsButtonText = SettingsManager.shared.isEasyMode ? "\("clubs_button".localized) \(Card.formatPercent(percent: Card.getPercentSuit(remainDeck: game.deck, suit: .clubs)))" : "clubs_button".localized
+                
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 15) {
-                    Button("spades_button".localized) {
+                    Button(spadesButtonText) {
                         SettingsManager.shared.performHapticFeedback()
                         game.guessSuit(.spades)
                     }
@@ -518,7 +545,7 @@ struct CardChallengeGameView: View {
                             .stroke(Color.white.opacity(0.5), lineWidth: 2)
                     )
                     
-                    Button("hearts_button".localized) {
+                    Button(heartsButtonText) {
                         SettingsManager.shared.performHapticFeedback()
                         game.guessSuit(.hearts)
                     }
@@ -533,7 +560,7 @@ struct CardChallengeGameView: View {
                             .stroke(Color.red.opacity(0.5), lineWidth: 2)
                     )
                     
-                    Button("diamonds_button".localized) {
+                    Button(diamondsButtonText) {
                         SettingsManager.shared.performHapticFeedback()
                         game.guessSuit(.diamonds)
                     }
@@ -548,7 +575,7 @@ struct CardChallengeGameView: View {
                             .stroke(Color.red.opacity(0.5), lineWidth: 2)
                     )
                     
-                    Button("clubs_button".localized) {
+                    Button(clubsButtonText) {
                         SettingsManager.shared.performHapticFeedback()
                         game.guessSuit(.clubs)
                     }
