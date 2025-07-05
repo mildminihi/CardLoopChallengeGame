@@ -129,6 +129,7 @@
 "settings_title" = "Settings";
 "audio_settings" = "Audio Settings";
 "sound_effects" = "Sound Effects";
+"sound_effects_description" = "Enable sound effects for game actions";
 "haptic_settings" = "Haptic Settings";
 "haptic_feedback" = "Haptic Feedback";
 "enable_haptic_description" = "Enable haptic feedback for button presses";

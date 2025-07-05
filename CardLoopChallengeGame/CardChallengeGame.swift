@@ -51,6 +51,7 @@ class CardChallengeGameModel: ObservableObject {
         feedback = ""
         showingResult = false
         GameStatistics.shared.trackGameStart()
+        SettingsManager.shared.playStartSound()
     }
     
     private func createAndShuffleDeck() {
@@ -78,11 +79,12 @@ class CardChallengeGameModel: ObservableObject {
         
         if card.isRed == isRed {
             feedback = "correct_card_was".localized(with: card.displayText)
-            //            advanceToNextStage()
+            SettingsManager.shared.playCorrectSound()
             gameResult = .nextStage
             GameStatistics.shared.trackStage1Choice(isRed: true)
         } else {
             feedback = "wrong_card_was_game_over".localized(with: card.displayText)
+            SettingsManager.shared.playWrongSound()
             gameResult = .lost
             showingResult = true
             GameStatistics.shared.trackGameEnd(won: false)
@@ -102,13 +104,13 @@ class CardChallengeGameModel: ObservableObject {
         
         if card.rank.rawValue == previousCard.rank.rawValue {
             feedback = "lucky_equal_ranks".localized
-            //            advanceToNextStage()
+            SettingsManager.shared.playCorrectSound()
             gameResult = .nextStage
             GameStatistics.shared.trackStage2Choice(isHigher: false, wasEqual: true)
         } else if isCorrect {
             let comparisonKey = isActuallyHigher ? "correct_card_is_higher_than" : "correct_card_is_lower_than"
             feedback = comparisonKey.localized(with: card.displayText, previousCard.displayText)
-            //            advanceToNextStage()
+            SettingsManager.shared.playCorrectSound()
             gameResult = .nextStage
             GameStatistics.shared.trackStage2Choice(isHigher: isActuallyHigher)
         } else {
@@ -117,6 +119,7 @@ class CardChallengeGameModel: ObservableObject {
             gameResult = .lost
             showingResult = true
             GameStatistics.shared.trackGameEnd(won: false)
+            SettingsManager.shared.playWrongSound()
             GameStatistics.shared.trackStage2Choice(isHigher: isActuallyHigher)
         }
     }
@@ -137,17 +140,19 @@ class CardChallengeGameModel: ObservableObject {
         
         if cardRank == minRank || cardRank == maxRank {
             feedback = "lucky_equal_boundary".localized
-            advanceToNextStage()
+            SettingsManager.shared.playCorrectSound()
+            gameResult = .nextStage
             GameStatistics.shared.trackStage3Choice(isInside: true, wasEqual: true)
         } else if (isInside && isActuallyInside) || (!isInside && !isActuallyInside) {
             let positionKey = isActuallyInside ? "correct_card_is_inside" : "correct_card_is_outside"
             feedback = positionKey.localized(with: card.displayText)
-            //            advanceToNextStage()
             gameResult = .nextStage
+            SettingsManager.shared.playCorrectSound()
             GameStatistics.shared.trackStage3Choice(isInside: isActuallyInside)
         } else {
             let positionKey = isActuallyInside ? "wrong_card_is_inside" : "wrong_card_is_outside"
             feedback = positionKey.localized(with: card.displayText)
+            SettingsManager.shared.playWrongSound()
             gameResult = .lost
             showingResult = true
             GameStatistics.shared.trackGameEnd(won: false)
@@ -167,9 +172,11 @@ class CardChallengeGameModel: ObservableObject {
             feedback = "correct_won_game".localized
             gameResult = .won
             showingResult = true
+            SettingsManager.shared.playWinSound()
             GameStatistics.shared.trackGameEnd(won: true)
         } else {
             feedback = "wrong_suit_was".localized(with: card.suit.rawValue)
+            SettingsManager.shared.playWrongSound()
             gameResult = .lost
             showingResult = true
             GameStatistics.shared.trackGameEnd(won: false)

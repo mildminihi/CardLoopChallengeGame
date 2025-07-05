@@ -65,6 +65,7 @@ class EndLessGameModel: ObservableObject {
         GameStatistics.shared.trackStageEncounterEndLessMode(stage: currentStage)
         GameStatistics.shared.trackEndlessGameStart()
         winCount = 0
+        SettingsManager.shared.playStartSound()
     }
     
     private func createAndShuffleDeck() {
@@ -92,11 +93,12 @@ class EndLessGameModel: ObservableObject {
         
         if card.isRed == isRed {
             feedback = "correct_card_was".localized(with: card.displayText)
-            //            advanceToNextStage()
+            SettingsManager.shared.playCorrectSound()
             gameResult = .nextStage
         } else {
             feedback = "wrong_card_was_game_over".localized(with: card.displayText)
             gameResult = .lost
+            SettingsManager.shared.playWrongSound()
             showingResult = true
         }
     }
@@ -113,16 +115,17 @@ class EndLessGameModel: ObservableObject {
         
         if card.rank.rawValue == previousCard.rank.rawValue {
             feedback = "lucky_equal_ranks".localized
-            //            advanceToNextStage()
+            SettingsManager.shared.playCorrectSound()
             gameResult = .nextStage
         } else if isCorrect {
             let comparisonKey = isActuallyHigher ? "correct_card_is_higher_than" : "correct_card_is_lower_than"
             feedback = comparisonKey.localized(with: card.displayText, previousCard.displayText)
-            //            advanceToNextStage()
+            SettingsManager.shared.playCorrectSound()
             gameResult = .nextStage
         } else {
             let comparisonKey = isActuallyHigher ? "wrong_card_is_higher_than" : "wrong_card_is_lower_than"
             feedback = comparisonKey.localized(with: card.displayText, previousCard.displayText)
+            SettingsManager.shared.playWrongSound()
             gameResult = .lost
             showingResult = true
         }
@@ -146,16 +149,17 @@ class EndLessGameModel: ObservableObject {
         
         if cardRank == minRank || cardRank == maxRank {
             feedback = "lucky_equal_boundary".localized
-            //            advanceToNextStage()
+            SettingsManager.shared.playCorrectSound()
             gameResult = .nextStage
         } else if (isInside && isActuallyInside) || (!isInside && !isActuallyInside) {
             let positionKey = isActuallyInside ? "correct_card_is_inside" : "correct_card_is_outside"
             feedback = positionKey.localized(with: card.displayText)
-            //            advanceToNextStage()
+            SettingsManager.shared.playCorrectSound()
             gameResult = .nextStage
         } else {
             let positionKey = isActuallyInside ? "wrong_card_is_inside" : "wrong_card_is_outside"
             feedback = positionKey.localized(with: card.displayText)
+            SettingsManager.shared.playWrongSound()
             gameResult = .lost
             showingResult = true
         }
@@ -168,11 +172,12 @@ class EndLessGameModel: ObservableObject {
         revealedCards.append(card)
         
         if card.suit == suit {
-            feedback = "correct_won_game".localized
-            //            advanceToNextStage()
+            feedback = "correct_card_was".localized
+            SettingsManager.shared.playCorrectSound()
             gameResult = .nextStage
         } else {
             feedback = "wrong_suit_was".localized(with: card.suit.rawValue)
+            SettingsManager.shared.playWrongSound()
             gameResult = .lost
             showingResult = true
         }
@@ -185,10 +190,11 @@ class EndLessGameModel: ObservableObject {
         
         if card.isOdd == isOdd {
             feedback = "correct_card_was".localized(with: card.displayText)
-            //            advanceToNextStage()
+            SettingsManager.shared.playCorrectSound()
             gameResult = .nextStage
         } else {
             feedback = "wrong_card_was_game_over".localized(with: card.displayText)
+            SettingsManager.shared.playWrongSound()
             gameResult = .lost
             showingResult = true
         }
@@ -201,10 +207,11 @@ class EndLessGameModel: ObservableObject {
         
         if card.isNumber == isNumber {
             feedback = "correct_card_was".localized(with: card.displayText)
-            //            advanceToNextStage()
+            SettingsManager.shared.playCorrectSound()
             gameResult = .nextStage
         } else {
             feedback = "wrong_card_was_game_over".localized(with: card.displayText)
+            SettingsManager.shared.playWrongSound()
             gameResult = .lost
             showingResult = true
         }

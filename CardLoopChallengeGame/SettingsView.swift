@@ -63,10 +63,15 @@ struct SettingsView: View {
                         ) {
                             settingToggleRow(
                                 title: "sound_effects".localized,
-                                description: "coming_soon".localized,
-                                isOn: .constant(false),
-                                isEnabled: false,
-                                action: {}
+                                description: "sound_effects_description".localized,
+                                isOn: $settingsManager.isSoundEnabled,
+                                isEnabled: true,
+                                action: {
+                                    settingsManager.toggleSound()
+                                    if settingsManager.isHapticEnabled {
+                                        settingsManager.performHapticFeedback()
+                                    }
+                                }
                             )
                         }
                         
