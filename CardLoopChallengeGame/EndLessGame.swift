@@ -310,6 +310,22 @@ struct EndLessGameView: View {
                     .font(.caption)
                     .foregroundColor(.green.opacity(0.6))
                 
+                // Current Card
+                if let lastCard = game.revealedCards.last {
+                    Text("current_stage".localized)
+                        .font(.title3)
+                        .foregroundColor(.green.opacity(0.8))
+                    
+                    if game.currentStage == .inOut, let secondLastCard = game.revealedCards.dropLast().last {
+                        HStack {
+                            BigCardView(card: secondLastCard)
+                            BigCardView(card: lastCard)
+                        }
+                    } else {
+                        BigCardView(card: lastCard)
+                    }
+                }
+                
                 // Revealed Cards Area
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 10) {

@@ -283,16 +283,30 @@ struct CardChallengeGameView: View {
                     .font(.caption)
                     .foregroundColor(.green.opacity(0.6))
                 
+                // Current Card
+                if let lastCard = game.revealedCards.last {
+                    Text("current_stage".localized)
+                        .font(.title3)
+                        .foregroundColor(.green.opacity(0.8))
+                    
+                    if game.currentStage == .stage3, let secondLastCard = game.revealedCards.dropLast().last {
+                        HStack {
+                            BigCardView(card: secondLastCard)
+                            BigCardView(card: lastCard)
+                        }
+                    } else {
+                        BigCardView(card: lastCard)
+                    }
+                }
+                
                 // Revealed Cards Area
-                ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 10) {
                         ForEach(Array(game.revealedCards.enumerated()), id: \.offset) { index, card in
                             CardView(card: card, stage: index + 1)
                         }
                     }
                     .padding(.horizontal)
-                }
-                .frame(height: 120)
+//                }
                 
                 // Feedback
                 if !game.feedback.isEmpty {
@@ -628,5 +642,27 @@ struct CardView: View {
                 )
                 .shadow(color: .green.opacity(0.3), radius: 3, x: 0, y: 2)
         }
+    }
+}
+
+struct BigCardView: View {
+    let card: Card
+    
+    var body: some View {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.black.opacity(0.7))
+                .frame(width: 120, height: 180)
+                .overlay(
+                    Text(card.displayText)
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(card.suit.color)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.green.opacity(0.6), lineWidth: 1)
+                )
+                .shadow(color: .green.opacity(0.3), radius: 3, x: 0, y: 2)
+
     }
 }

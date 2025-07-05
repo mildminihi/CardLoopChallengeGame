@@ -66,6 +66,7 @@
 
 /* Card View */
 "stage_label" = "ด่าน %d";
+"current_stage" = "ด่านปัจจุบัน";
 
 /* Language Selection */
 "language_button" = "Lang";

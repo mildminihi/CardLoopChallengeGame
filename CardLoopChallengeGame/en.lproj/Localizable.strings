@@ -88,6 +88,7 @@
 
 /* Card View */
 "stage_label" = "Stage %d";
+"current_stage" = "Current Stage";
 
 /* Buttons */
 "red" = "Red";
