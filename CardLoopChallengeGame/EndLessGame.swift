@@ -172,7 +172,7 @@ class EndLessGameModel: ObservableObject {
         revealedCards.append(card)
         
         if card.suit == suit {
-            feedback = "correct_card_was".localized
+            feedback = "correct_card_was".localized(with: card.displayText)
             SettingsManager.shared.playCorrectSound()
             gameResult = .nextStage
         } else {
