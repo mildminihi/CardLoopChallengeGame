@@ -379,23 +379,6 @@ struct CardChallengeGameView: View {
                     .shadow(color: .blue.opacity(0.3), radius: 2, x: 0, y: 1)
                     
                     Spacer()
-                    
-                    // Language Button - Bottom Right
-                    Button(action: {
-                        SettingsManager.shared.performHapticFeedback()
-                        showingLanguagePicker = true
-                    }) {
-                        Text(getCurrentLanguageFlag())
-                            .font(.title3)
-                    }
-                    .padding(8)
-                    .background(Color.black.opacity(0.4))
-                    .clipShape(Circle())
-                    .overlay(
-                        Circle()
-                            .stroke(Color.green.opacity(0.6), lineWidth: 1.5)
-                    )
-                    .shadow(color: .green.opacity(0.3), radius: 2, x: 0, y: 1)
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 16)
@@ -405,23 +388,6 @@ struct CardChallengeGameView: View {
             StatisticsView(isInGamePage: true, isNormalModel: true)
                 .presentationDetents([.fraction(0.9)])
                 .presentationDragIndicator(.visible)
-        }
-        .alert("language_selection".localized, isPresented: $showingLanguagePicker) {
-            ForEach(languageManager.availableLanguages, id: \.code) { language in
-                Button("\(language.flag) \(language.name)") {
-                    SettingsManager.shared.performHapticFeedback()
-                    languageManager.setLanguage(language.code)
-                }
-            }
-            Button("cancel".localized, role: .cancel) {
-                SettingsManager.shared.performHapticFeedback()
-            }
-        } message: {
-            Text("select_language".localized)
-        }
-        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("LanguageChanged"))) { _ in
-            // Force UI refresh when language changes
-            game.objectWillChange.send()
         }
     }
     

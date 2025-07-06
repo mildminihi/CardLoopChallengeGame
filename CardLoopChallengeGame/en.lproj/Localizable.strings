@@ -22,20 +22,20 @@
 "stage6_description" = "Guess is Number or Face [J,Q,K,A]";
 
 /* Buttons */
-"red_button" = "Red ♥♦";
-"black_button" = "Black ♠♣";
-"higher_button" = "Higher ↑";
-"lower_button" = "Lower ↓";
-"inside_button" = "Inside ↔";
-"outside_button" = "Outside ↕";
-"spades_button" = "Spades ♠";
-"hearts_button" = "Hearts ♥";
-"diamonds_button" = "Diamonds ♦";
-"clubs_button" = "Clubs ♣";
-"odd_button" = "Odd 🂣";
-"even_button" = "Even 🂢";
-"number_button" = "Number 🂢";
-"face_button" = "Face 🃞";
+"red_button" = "Red ♥️♦️";
+"black_button" = "Black ♠️♣️";
+"higher_button" = "Higher 🔼";
+"lower_button" = "Lower 🔽";
+"inside_button" = "Inside ↔️";
+"outside_button" = "Outside ↕️";
+"spades_button" = "Spades ♠️";
+"hearts_button" = "Hearts ♥️";
+"diamonds_button" = "Diamonds ♦️";
+"clubs_button" = "Clubs ♣️";
+"odd_button" = "Odd 1️⃣";
+"even_button" = "Even 2️⃣";
+"number_button" = "Number 2️⃣";
+"face_button" = "Face 🔤";
 "start_new_game" = "Start New Game";
 "next_stage" = "Next Stage";
 
